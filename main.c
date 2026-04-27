@@ -2,12 +2,6 @@
 #include <sqlite3.h>
 #include <string.h>
 
-/*
- gcc main.c \
-  -I$(brew --prefix sqlite)/include \
-  -L$(brew --prefix sqlite)/lib \
-  -lsqlite3
- * /
 
 
 // Callback function that prints todo list when ls command is entered 
@@ -30,6 +24,11 @@ void parse_input(char input_text[100], sqlite3 *db) {
             printf("SQL error: %s\n", errMsg);
             sqlite3_free(errMsg);
         }
+    }
+    
+    // Help command list
+    else if(strcmp(input_text, "h\n")==0){
+        printf("ls : list todo task \n add <name of task> : to add task to todo list \n rm <name of task>: to delete task from todo list\n");
     }
 
     // Add todo 
