@@ -25,6 +25,7 @@ void parse_input(char input_text[100], sqlite3 *db) {
             printf("SQL error: %s\n", errMsg);
             sqlite3_free(errMsg);
         }
+        printf("\n");
     }
 
     // Help command list
