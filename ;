@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <sqlite3.h>
 #include <string.h>
-#include <mach-o/dyld.h>
-#include <limits.h>
-#include <libgen.h>
+
+
 
 // Callback function that prints todo list when ls command is entered 
 int callback(void *data, int argc, char **argv, char **azColName) {
@@ -26,13 +25,13 @@ void parse_input(char input_text[100], sqlite3 *db) {
             sqlite3_free(errMsg);
         }
     }
-
+    
     // Help command list
     else if(strcmp(input_text, "h\n")==0){
         printf("1. ls : list todo task \n2. add <name of task> : to add task to todo list \n3. rm <name of task>: to delete task from todo list\n");
     }
 
-    // Add task 
+    // Add todo 
     else if (strncmp(input_text, "add", 3) == 0) {
         sqlite3_stmt *stmt;
         char result[100] = "";
@@ -67,7 +66,7 @@ void parse_input(char input_text[100], sqlite3 *db) {
 
         sqlite3_stmt *stmt;
 
-        // Extract rm command
+        // ---- extract query after "rm " ----
         char result[100] = "";
 
         char *token = strtok(input_text, " "); // skip "rm"
@@ -79,7 +78,7 @@ void parse_input(char input_text[100], sqlite3 *db) {
             token = strtok(NULL, " ");
         }
 
-        // Remove trailing space
+        // remove trailing space
         if (strlen(result) > 0 && result[strlen(result) - 1] == ' ') {
             result[strlen(result) - 1] = '\0';
         }
@@ -137,31 +136,11 @@ void parse_input(char input_text[100], sqlite3 *db) {
 
 int main(){
 
-    char path[1024];
-    uint32_t size = sizeof(path);
-
-    // Get path of executable
-    _NSGetExecutablePath(path, &size); 
-
-    char dir_copy[1024];
-    strcpy(dir_copy, path);
-
-    char *dir_path = dirname(dir_copy);
-
-    char db_path[1024];
-    char ext_path[1024];
-
-    snprintf(db_path, sizeof(db_path), "%s/%s", dir_path, "todo.db");
-    snprintf(ext_path, sizeof(ext_path), "%s/%s", dir_path, "fuzzy.dylib");
-
     sqlite3 *db; // Create sqlite3 object
     char* errmsg;
-
-    // Getting path of executable
-
-
+    
     // Open database connection 
-    int rc = sqlite3_open(db_path, &db);
+    int rc = sqlite3_open("todo.db", &db);
     if(rc != SQLITE_OK){
         printf("DB file created successfully %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
@@ -180,9 +159,9 @@ int main(){
     sqlite3_db_config(db,SQLITE_DBCONFIG_ENABLE_LOAD_EXTENSION,1, 0);
     sqlite3_enable_load_extension(db, 1);
 
-    // Add entension
+    // add entension
     char *err = NULL;
-    if (sqlite3_load_extension(db, ext_path, 0, &err) != SQLITE_OK) {
+    if (sqlite3_load_extension(db, "./fuzzy.dylib", 0, &err) != SQLITE_OK) {
         printf("Failed to load extension: %s\n", err);
         sqlite3_free(err);
         return 1;
