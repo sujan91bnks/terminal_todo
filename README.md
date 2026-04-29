@@ -24,6 +24,11 @@ gcc main.c -I$(brew --prefix sqlite)/include -L$(brew --prefix sqlite)/lib -lsql
 | `h` | Show help |
 | `q` | Quit |
 
+
+
+https://github.com/user-attachments/assets/faad75e7-2eef-48b3-afef-3467d86ed1da
+
+
 ## Features
 
 - Persistent storage with SQLite
